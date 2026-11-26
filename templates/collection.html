@@ -1,0 +1,4 @@
+{% extends 'base.html' %}{% block title %}{{ title }} collection — FilmHub{% endblock %}{% block content %}
+<div class="breadcrumbs"><a href="{{ url_for('home') }}">Discover</a><span>/</span><span>Collection</span></div><section class="page-intro collection-intro"><span class="eyebrow">A CONNECTED COLLECTION</span><h1>{{ title }}</h1><p>Every title connected to this story, gathered in one place.</p></section>
+<section class="library-section">{% if movies %}<div class="section-heading"><div><span class="eyebrow">THE COLLECTION</span><h2>{{ movies|length }} titles</h2></div></div><div class="movie-grid">{% for movie in movies %}{% include '_card.html' %}{% endfor %}</div>{% else %}<div class="empty-state"><h3>No related titles yet</h3><p>Use the admin panel to connect movies into a collection.</p></div>{% endif %}</section>
+{% endblock %}
