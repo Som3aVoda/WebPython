@@ -147,14 +147,32 @@ def admin_dashboard():
     return render_template('admin_dashboard.html', movies=movies)
 
 
+
 def form_payload():
     related_ids = [value for value in request.form.getlist('related_ids') if value]
+
+    server_names = request.form.getlist('server_names')
+    server_urls = request.form.getlist('server_urls')
+
+    servers = []
+
+    for name, url in zip(server_names, server_urls):
+        name = name.strip()
+        url = url.strip()
+
+        if name and url:
+            servers.append({
+                'name': name,
+                'url': url
+            })
+
     return {
         'title': request.form.get('title', '').strip(),
         'img': request.form.get('img', '').strip(),
         'desc': request.form.get('desc', '').strip(),
         'cast': request.form.get('cast', '').strip(),
-        'url': request.form.get('url', '').strip(),
+        'url': servers[0]['url'] if servers else '',
+        'servers': servers,
         'type': request.form.get('type', '').strip(),
         'media_type': request.form.get('media_type', '').strip(),
         'rel': request.form.get('rel', '').strip(),
@@ -164,6 +182,7 @@ def form_payload():
         'episode_number': request.form.get('episode_number', '').strip(),
         'related_ids': related_ids,
     }
+
 
 
 @app.route('/admin/movie/new', methods=['GET', 'POST'])
