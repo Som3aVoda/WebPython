@@ -65,7 +65,7 @@ def admin_required(view):
 
 @app.context_processor
 def inject_globals():
-    return {'site_name': 'FILMHUB'}
+    return {'site_name': 'TVHOME'}
 
 
 @app.route('/')
