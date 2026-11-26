@@ -11,7 +11,7 @@
 <body>
   <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
   <header class="site-header">
-    <a class="brand" href="{{ url_for('home') }}"><span class="brand-mark">TV</span><span>FILM<span class="brand-light">HOME</span></span></a>
+    <a class="brand" href="{{ url_for('home') }}"><span class="brand-mark">TV</span><span><span class="brand-light">HOME</span></a>
     <nav class="main-nav"><a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}">Discover</a><a href="{{ url_for('search') }}">Browse</a></nav>
     <form class="nav-search" action="{{ url_for('search') }}" method="get"><span class="search-icon">⌕</span><input name="q" value="{{ request.args.get('q','') }}" placeholder="Search titles, genres..." aria-label="Search titles"><kbd>↵</kbd></form>
     <a class="admin-link" href="{{ url_for('admin_dashboard') }}">Admin <span>↗</span></a>
