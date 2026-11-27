@@ -26,8 +26,13 @@
       {% endfor %}
     </select>
 
-    <button class="button button-primary" type="submit">Search</button>
-  </form>
+<button class="button button-primary" type="submit">Search</button>
+
+{% if query or selected_category %}
+  <a class="button button-ghost" href="{{ url_for('search', q=query) }}">
+    Clear category
+  </a>
+{% endif %}  </form>
 </section>
 
 <section class="library-section search-results">
