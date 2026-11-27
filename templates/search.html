@@ -1,4 +1,4 @@
-{% extends 'base.html' %}{% block title %}Browse titles — FilmHub{% endblock %}{% block content %}
+{% extends 'base.html' %}{% block title %}Browse titles — TVHOME{% endblock %}{% block content %}
 <section class="page-intro"><span class="eyebrow">FIND YOUR NEXT WATCH</span><h1>Browse <em>everything.</em></h1><p>Search your library by title, cast, description, or genre.</p>
 <form class="large-search" method="get"><span>⌕</span><input name="q" value="{{ query }}" placeholder="Try a title, actor, or genre..." autofocus><button class="button button-primary" type="submit">Search</button></form></section>
 <section class="library-section search-results"><div class="section-heading"><div><span class="eyebrow">{% if query %}SEARCH RESULTS{% else %}ALL TITLES{% endif %}</span><h2>{% if query %}“{{ query }}”{% else %}The full library{% endif %}</h2></div><span class="result-count">{{ movies|length }} titles</span></div>
