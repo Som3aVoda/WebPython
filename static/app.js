@@ -573,7 +573,7 @@
   
 /* TVhome Owl-style carousel */
 (() => {
-  const carousels = document.querySelectorAll('[data-owl-carousel]');
+  const carousels = document.querySelectorAll('.owl-carousel');
 
   carousels.forEach((carousel) => {
     const viewport = carousel.querySelector('.owl-viewport');
@@ -590,8 +590,8 @@
     let paused = false;
 
     const getPageCount = () => {
-      const maxScroll = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
-      return Math.max(1, Math.ceil(maxScroll / viewport.clientWidth) + 1);
+  const maxScroll = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
+  return Math.max(1, Math.ceil(maxScroll / viewport.clientWidth));
     };
 
     const goToPage = (page, smooth = true) => {
