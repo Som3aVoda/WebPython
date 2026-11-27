@@ -346,6 +346,8 @@ def admin_edit_movie(movie_id):
 @admin_required
 @app.route('/admin/movies/bulk-delete', methods=['POST'])
 @admin_required
+@app.route('/admin/movies/bulk-delete', methods=['POST'])
+@admin_required
 def admin_bulk_delete():
     movie_ids = request.form.getlist('movie_ids')
 
@@ -374,6 +376,10 @@ def admin_bulk_delete():
         flash(f'Could not delete {failed} title(s).', 'error')
 
     return redirect(url_for('admin_dashboard'))
+
+
+@app.route('/admin/movie/<movie_id>/delete', methods=['POST'])
+@admin_required
 def admin_delete_movie(movie_id):
     try:
         api_request('DELETE', f'/movies/{quote(str(movie_id), safe="")}', admin=True)
@@ -381,7 +387,6 @@ def admin_delete_movie(movie_id):
     except (requests.RequestException, RuntimeError) as exc:
         flash(f'Could not delete title: {getattr(exc, "response", None).text if getattr(exc, "response", None) is not None else str(exc)}', 'error')
     return redirect(url_for('admin_dashboard'))
-
 
 @app.errorhandler(404)
 def not_found(_error):
