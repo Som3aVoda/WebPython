@@ -1,36 +1,20 @@
-{% extends 'base.html' %}
-{% block title %}{{ movie.title }} — TVhome{% endblock %}
+{% extends 'base.html' %}{% block title %}TVhome — Discover something great{% endblock %}
 {% block content %}
-<div class="breadcrumbs"><a href="{{ url_for('home') }}">Discover</a><span>/</span><span>{{ movie.title }}</span></div>
-<section class="detail-layout">
-  <div class="detail-poster">{% if movie.img %}<img src="{{ movie.img }}" alt="{{ movie.title }} poster">{% else %}<div class="poster-fallback detail-fallback">{{ movie.title[:1]|upper }}</div>{% endif %}</div>
-  <div class="detail-copy">
-    <span class="eyebrow">{% if movie.media_type %}{{ movie.media_type }}{% elif movie.type %}{{ movie.type }}{% else %}NOW IN YOUR LIBRARY{% endif %}</span>
-    <h1>{{ movie.title }}</h1>
-    <div class="detail-meta">{% if movie.release_year %}<span>{{ movie.release_year }}</span>{% endif %}{% if movie.season_number %}<span>Season {{ movie.season_number }}</span>{% endif %}{% if movie.episode_number %}<span>Episode {{ movie.episode_number }}</span>{% endif %}</div>
-    <p class="detail-description">{{ movie.desc or 'No description has been added yet.' }}</p>
-    {% if movie.cast %}<div class="detail-field"><span>CAST</span><p>{{ movie.cast }}</p></div>{% endif %}
+{% if api_offline %}<section class="offline-panel"><span class="eyebrow">CONNECTION ISSUE</span><h1>The library is taking a break.</h1><p>We could not reach the movie database. Check that the API service is running, then refresh this page.</p><a class="button button-primary" href="{{ url_for('home') }}">Try again</a></section>
+{% else %}
+<section class="hero">
+  <div class="hero-copy"><span class="eyebrow"><i></i> YOUR PERSONAL SCREENING ROOM</span><h1>Stories that stay<br><em>with you.</em></h1><p>Discover films, revisit favourites, and find every chapter of the stories you love — all in one place.</p>
+    <div class="hero-actions"><a class="button button-primary" href="#library">Explore library <span>→</span></a><a class="button button-ghost" href="{{ url_for('search') }}">Find a title</a></div>
+    <div class="hero-stats"><div><strong>{{ movies|length }}</strong><span>Titles in library</span></div><div><strong>∞</strong><span>Stories to explore</span></div></div>
   </div>
+  <div class="hero-art"><div class="hero-orbit orbit-a"></div><div class="hero-orbit orbit-b"></div><div class="hero-poster hero-poster-back">✦</div><div class="hero-poster hero-poster-front"><span>THE<br>NEXT<br><b>CHAPTER</b></span><small>NOW SHOWING</small></div><div class="floating-note note-top">✦ &nbsp; YOUR WATCHLIST, REIMAGINED</div><div class="floating-note note-bottom"><span class="pulse-dot"></span> Curated for curious minds</div></div>
 </section>
-{% set servers = movie.servers or [] %}
-{% if not servers and movie.url %}{% set servers = [{'name': 'Main Server', 'url': movie.url}] %}{% endif %}
-<section class="watch-section" id="watch-section"
- data-watch-id="{{ movie.id }}" data-watch-title="{{ movie.title }}"
- data-watch-poster="{{ movie.img or '' }}" data-watch-page="{{ request.full_path }}"
- data-watch-media="{{ movie.media_type or movie.type or '' }}"
- data-watch-season="{{ movie.season_number or '' }}" data-watch-episode="{{ movie.episode_number or '' }}">
-  <h2>Watch {{ movie.title }}</h2>
-  {% if servers %}
-  <div class="server-buttons">{% for server in servers %}
-    <button type="button" class="button {% if loop.first %}button-primary{% else %}button-ghost{% endif %} server-button" data-server-url="{{ server.url }}" onclick="changeServer(this)">{{ server.name }}</button>
-  {% endfor %}</div>
-  <div class="video-player-container">
-    <video id="tvhome-video-player" controls playsinline preload="metadata" hidden></video>
-    <iframe id="video-player" src="about:blank" title="{{ movie.title }} video player" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="no-referrer"></iframe>
-  </div>
-  <p class="watch-progress-note" id="watchProgressNote">Your viewing history is saved on this browser.</p>
-  {% else %}<p class="muted-note">No video servers have been added for this title yet.</p>{% endif %}
+<section class="library-section continue-section" id="continue-watching" hidden>
+  <div class="section-heading"><div><span class="eyebrow">PICK UP WHERE YOU LEFT OFF</span><h2>Continue Watching<span class="accent-dot">.</span></h2></div><button type="button" class="continue-clear" id="clearWatchHistory">Clear history</button></div>
+  <div class="continue-grid" id="continueWatchingList"></div>
 </section>
-{% if movie.franchise_id or movie.rel or movie.related_ids %}<a class="collection-pill" href="{{ url_for('collection', collection_id=movie.id) }}">⌘ &nbsp; Explore related titles <span>→</span></a>{% endif %}
-{% if related %}<section class="library-section related-section"><div class="section-heading"><div><span class="eyebrow">KEEP THE STORY GOING</span><h2>Related titles<span class="accent-dot">.</span></h2></div><a class="text-link" href="{{ url_for('collection', collection_id=movie.id) }}">View collection ↗</a></div><div class="movie-grid">{% for movie in related %}{% include '_card.html' %}{% endfor %}</div></section>{% endif %}
+<section class="library-section" id="library"><div class="section-heading"><div><span class="eyebrow">THE COLLECTION</span><h2>Explore the library<span class="accent-dot">.</span></h2></div><a class="text-link" href="{{ url_for('search') }}">Search all titles <span>↗</span></a></div>
+  {% if movies %}<div class="movie-grid">{% for movie in movies %}{% include '_card.html' %}{% endfor %}</div>{% else %}<div class="empty-state"><span>✦</span><h3>Your library starts here</h3><p>Add your first movie from the admin panel.</p><a href="{{ url_for('admin_dashboard') }}" class="button button-primary">Open admin</a></div>{% endif %}
+</section>
+{% endif %}
 {% endblock %}
