@@ -1,138 +1,124 @@
 
 {% extends 'base.html' %}
-{% block title %}TVhome — Discover something great{% endblock %}
+
+{% block title %}TVhome — Watch Movies & Series{% endblock %}
 
 {% block content %}
+
 {% if api_offline %}
-<section class="offline-panel">
-  <span class="eyebrow">CONNECTION ISSUE</span>
-  <h1>The library is taking a break.</h1>
-  <p>We could not reach the movie database. Check that the API service is running, then refresh this page.</p>
-  <a class="button button-primary" href="{{ url_for('home') }}">Try again</a>
+<section class="empty-state">
+    <h2>TVhome is temporarily unavailable</h2>
+    <p>We couldn't connect to the movie database. Please try again later.</p>
 </section>
 {% else %}
 
+<!-- HERO -->
 <section class="hero">
-  <div class="hero-copy">
-    <span class="eyebrow"><i></i> YOUR PERSONAL SCREENING ROOM</span>
-    <h1>Stories that stay<br><em>with you.</em></h1>
-    <p>Discover films, revisit favourites, and find every chapter of the stories you love — all in one place.</p>
-    <div class="hero-actions">
-      <a class="button button-primary" href="#library">Explore library <span>→</span></a>
-      <a class="button button-ghost" href="{{ url_for('search') }}">Find a title</a>
+    <div class="hero-content">
+        <span class="eyebrow">YOUR ENTERTAINMENT HOME</span>
+        <h1>Discover your next <span>favorite</span>.</h1>
+        <p>Explore movies and series, discover new stories, and continue watching where you left off.</p>
+        <a href="#library" class="btn btn-primary">Explore Library</a>
     </div>
-    <div class="hero-stats">
-      <div><strong>{{ movies|length }}</strong><span>Titles in library</span></div>
-      <div><strong>∞</strong><span>Stories to explore</span></div>
-    </div>
-  </div>
-
-  <div class="hero-art">
-    <div class="hero-orbit orbit-a"></div>
-    <div class="hero-orbit orbit-b"></div>
-    <div class="hero-poster hero-poster-back">✦</div>
-    <div class="hero-poster hero-poster-front">
-      <span>THE<br>NEXT<br><b>CHAPTER</b></span>
-      <small>NOW SHOWING</small>
-    </div>
-    <div class="floating-note note-top">✦ &nbsp; YOUR WATCHLIST, REIMAGINED</div>
-    <div class="floating-note note-bottom"><span class="pulse-dot"></span> Curated for curious minds</div>
-  </div>
 </section>
 
-<section class="library-section continue-section" id="continue-watching" hidden>
-  <div class="section-heading">
-    <div>
-      <span class="eyebrow">PICK UP WHERE YOU LEFT OFF</span>
-      <h2>Continue Watching<span class="accent-dot">.</span></h2>
+<!-- CONTINUE WATCHING -->
+<section class="content-section" id="continue-watching" hidden>
+    <div class="section-heading">
+        <div>
+            <span class="eyebrow">PICK UP WHERE YOU LEFT OFF</span>
+            <h2>Continue Watching</h2>
+        </div>
+        <button id="clearWatchHistory" class="btn btn-secondary" type="button">
+            Clear History
+        </button>
     </div>
-    <button type="button" class="continue-clear" id="clearWatchHistory">Clear history</button>
-  </div>
-  <div class="continue-grid" id="continueWatchingList"></div>
+
+    <div id="continueWatchingList" class="movie-grid"></div>
 </section>
 
+<!-- TRENDING NOW -->
 {% if featured %}
-<section class="library-section owl-section">
-  <div class="section-heading">
-    <div>
-      <span class="eyebrow">WHAT'S HOT IN YOUR LIBRARY</span>
-      <h2>Trending Now<span class="accent-dot">.</span></h2>
-    </div>
-    <a class="text-link" href="{{ url_for('search') }}">Explore all titles ↗</a>
-  </div>
-
-  <div class="owl-carousel" data-owl-carousel>
-    <div class="owl-viewport">
-      <div class="owl-track">
-        {% for movie in featured %}
-        <div class="owl-slide">
-          {% include '_card.html' %}
+<section class="content-section">
+    <div class="section-heading">
+        <div>
+            <span class="eyebrow">WHAT TO WATCH NEXT</span>
+            <h2>Trending Now</h2>
         </div>
-        {% endfor %}
-      </div>
     </div>
-    <div class="owl-controls">
-      <button class="owl-arrow owl-prev" type="button" aria-label="Previous titles">‹</button>
-      <div class="owl-dots" aria-label="Trending carousel pages"></div>
-      <button class="owl-arrow owl-next" type="button" aria-label="Next titles">›</button>
+
+    <div class="owl-carousel">
+        <div class="owl-viewport">
+            <div class="owl-track">
+                {% for movie in featured %}
+                <div class="owl-slide">
+                    {% include '_card.html' %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="owl-controls">
+            <button class="owl-prev" type="button" aria-label="Previous">‹</button>
+            <div class="owl-dots"></div>
+            <button class="owl-next" type="button" aria-label="Next">›</button>
+        </div>
     </div>
-  </div>
 </section>
 {% endif %}
 
+<!-- ALL SERIES -->
 {% if series %}
-<section class="library-section owl-section">
-  <div class="section-heading">
-    <div>
-      <span class="eyebrow">MORE TO BINGE</span>
-      <h2>All Series<span class="accent-dot">.</span></h2>
-    </div>
-    <a class="text-link" href="{{ url_for('search') }}">Browse library ↗</a>
-  </div>
-
-  <div class="owl-carousel" data-owl-carousel>
-    <div class="owl-viewport">
-      <div class="owl-track">
-        {% for movie in series %}
-        <div class="owl-slide">
-          {% include '_card.html' %}
+<section class="content-section">
+    <div class="section-heading">
+        <div>
+            <span class="eyebrow">BINGE YOUR FAVORITES</span>
+            <h2>All Series</h2>
         </div>
-        {% endfor %}
-      </div>
     </div>
-    <div class="owl-controls">
-      <button class="owl-arrow owl-prev" type="button" aria-label="Previous series">‹</button>
-      <div class="owl-dots" aria-label="Series carousel pages"></div>
-      <button class="owl-arrow owl-next" type="button" aria-label="Next series">›</button>
+
+    <div class="owl-carousel">
+        <div class="owl-viewport">
+            <div class="owl-track">
+                {% for movie in series %}
+                <div class="owl-slide">
+                    {% include '_card.html' %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="owl-controls">
+            <button class="owl-prev" type="button" aria-label="Previous">‹</button>
+            <div class="owl-dots"></div>
+            <button class="owl-next" type="button" aria-label="Next">›</button>
+        </div>
     </div>
-  </div>
 </section>
 {% endif %}
 
-<section class="library-section" id="library">
-  <div class="section-heading">
-    <div>
-      <span class="eyebrow">THE COLLECTION</span>
-      <h2>Explore the library<span class="accent-dot">.</span></h2>
+<!-- MOVIE LIBRARY -->
+<section class="content-section" id="library">
+    <div class="section-heading">
+        <div>
+            <span class="eyebrow">EXPLORE THE COLLECTION</span>
+            <h2>Discover</h2>
+        </div>
+        <a href="{{ url_for('search') }}" class="text-link">Browse All →</a>
     </div>
-    <a class="text-link" href="{{ url_for('search') }}">Search all titles <span>↗</span></a>
-  </div>
 
-  {% if movies %}
+    {% if movies %}
     <div class="movie-grid">
-      {% for movie in movies %}
-        {% include '_card.html' %}
-      {% endfor %}
+        {% for movie in movies %}
+            {% include '_card.html' %}
+        {% endfor %}
     </div>
-  {% else %}
+    {% else %}
     <div class="empty-state">
-      <span>✦</span>
-      <h3>Your library starts here</h3>
-      <p>Add your first movie from the admin panel.</p>
-      <a href="{{ url_for('admin_dashboard') }}" class="button button-primary">Open admin</a>
+        <h3>No movies available yet</h3>
+        <p>Check back later for new content.</p>
     </div>
-  {% endif %}
+    {% endif %}
 </section>
 
 {% endif %}
+
 {% endblock %}
