@@ -1,6 +1,68 @@
-{% extends 'base.html' %}{% block title %}Browse titles — TVHOME{% endblock %}{% block content %}
-<section class="page-intro"><span class="eyebrow">FIND YOUR NEXT WATCH</span><h1>Browse <em>everything.</em></h1><p>Search your library by title, cast, description, or genre.</p>
-<form class="large-search" method="get"><span>⌕</span><input name="q" value="{{ query }}" placeholder="Try a title, actor, or genre..." autofocus><button class="button button-primary" type="submit">Search</button></form></section>
-<section class="library-section search-results"><div class="section-heading"><div><span class="eyebrow">{% if query %}SEARCH RESULTS{% else %}ALL TITLES{% endif %}</span><h2>{% if query %}“{{ query }}”{% else %}The full library{% endif %}</h2></div><span class="result-count">{{ movies|length }} titles</span></div>
-{% if api_offline %}<div class="empty-state"><h3>Could not reach the library</h3><p>Please try again in a moment.</p></div>{% elif movies %}<div class="movie-grid">{% for movie in movies %}{% include '_card.html' %}{% endfor %}</div>{% else %}<div class="empty-state"><span>⌕</span><h3>No titles found</h3><p>Try a different search term.</p></div>{% endif %}</section>
+
+{% extends 'base.html' %}
+{% block title %}Browse titles — TVhome{% endblock %}
+
+{% block content %}
+<section class="page-intro">
+  <span class="eyebrow">FIND YOUR NEXT WATCH</span>
+  <h1>Browse <em>everything.</em></h1>
+  <p>Search your library by title, cast, description, or category.</p>
+
+  <form class="large-search category-search" method="get">
+    <div class="search-input-wrap">
+      <span>⌕</span>
+      <input name="q" value="{{ query }}"
+             placeholder="Try a title, actor, or genre..."
+             aria-label="Search titles">
+    </div>
+
+    <select name="category" aria-label="Filter by category">
+      <option value="">All categories</option>
+      {% for category in categories %}
+        <option value="{{ category }}"
+          {% if selected_category|lower == category|lower %}selected{% endif %}>
+          {{ category }}
+        </option>
+      {% endfor %}
+    </select>
+
+    <button class="button button-primary" type="submit">Search</button>
+  </form>
+</section>
+
+<section class="library-section search-results">
+  <div class="section-heading">
+    <div>
+      <span class="eyebrow">
+        {% if query or selected_category %}FILTERED RESULTS{% else %}ALL TITLES{% endif %}
+      </span>
+      <h2>
+        {% if selected_category %}{{ selected_category }}
+        {% elif query %}“{{ query }}”
+        {% else %}The full library{% endif %}
+      </h2>
+    </div>
+    <span class="result-count">{{ movies|length }} titles</span>
+  </div>
+
+  {% if api_offline %}
+    <div class="empty-state">
+      <h3>Could not reach the library</h3>
+      <p>Please try again in a moment.</p>
+    </div>
+  {% elif movies %}
+    <div class="movie-grid">
+      {% for movie in movies %}
+        {% include '_card.html' %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <span>⌕</span>
+      <h3>No titles found</h3>
+      <p>Try another search or category.</p>
+      <a class="button button-ghost" href="{{ url_for('search') }}">Clear filters</a>
+    </div>
+  {% endif %}
+</section>
 {% endblock %}
