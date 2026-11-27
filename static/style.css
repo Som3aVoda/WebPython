@@ -112,5 +112,357 @@
 #tvhome-video-player{display:block;width:100%;height:auto;min-height:280px;max-height:75vh;background:#000}
 #tvhome-video-player[hidden],#video-player[hidden]{display:none!important}
 @media(max-width:650px){.continue-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.continue-info{padding:9px}.continue-title{font-size:10px}.continue-section .section-heading{align-items:center}.continue-clear{margin-top:0;white-space:nowrap}}
+    
+/* =========================================
+   TVHOME PURPLE REDESIGN
+   ========================================= */
 
+:root {
+  --bg: #0b0813;
+  --panel: #151020;
+  --panel2: #1d162b;
+  --line: rgba(190, 150, 255, .13);
+  --text: #f7f2ff;
+  --muted: #a69ab8;
+  --accent: #b98aff;
+  --accent2: #8756d8;
+  --red: #ff7777;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+.ambient-one {
+  background: rgba(137, 75, 224, .13);
+}
+
+.ambient-two {
+  background: rgba(91, 48, 150, .12);
+}
+
+.brand-mark {
+  background: linear-gradient(135deg, #c9a5ff, #8854d6);
+  color: #160d24;
+}
+
+.button-primary {
+  background: linear-gradient(135deg, #bd91ff, #8954dc);
+  color: #170d24;
+  border-color: transparent;
+}
+
+.button-primary:hover {
+  filter: brightness(1.12);
+  box-shadow: 0 8px 28px rgba(153, 100, 225, .25);
+}
+
+.main-nav a.active,
+.text-link,
+.card-title:hover,
+.collection-link:hover {
+  color: var(--accent);
+}
+
+.accent-dot {
+  color: var(--accent);
+}
+
+.site-header,
+.site-footer,
+.movie-card,
+.large-search,
+.page-intro,
+.detail-layout,
+.watch-section {
+  border-color: var(--line);
+}
+
+/* Movie poster hover description */
+
+.poster-wrap {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.poster-wrap img {
+  transition: transform .45s ease, filter .35s ease;
+}
+
+.poster-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    to top,
+    rgba(12, 7, 22, .97) 0%,
+    rgba(12, 7, 22, .72) 45%,
+    rgba(12, 7, 22, .05) 100%
+  );
+  opacity: .45;
+  transition: opacity .3s ease;
+}
+
+.poster-description {
+  position: absolute;
+  z-index: 2;
+  left: 14px;
+  right: 14px;
+  bottom: 48px;
+  color: #f8f2ff;
+  font-size: 12px;
+  line-height: 1.55;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity .3s ease, transform .3s ease;
+  pointer-events: none;
+}
+
+.poster-wrap:hover .poster-description,
+.poster-wrap:focus-visible .poster-description {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.poster-wrap:hover .poster-shade,
+.poster-wrap:focus-visible .poster-shade {
+  opacity: 1;
+}
+
+.poster-wrap:hover img,
+.poster-wrap:focus-visible img {
+  transform: scale(1.055);
+  filter: brightness(.75);
+}
+
+.play-chip {
+  z-index: 3;
+  transition: transform .25s ease, background .25s ease;
+}
+
+.poster-wrap:hover .play-chip,
+.poster-wrap:focus-visible .play-chip {
+  transform: scale(1.1);
+  background: var(--accent);
+  color: #170d24;
+}
+
+.poster-tag {
+  z-index: 4;
+}
+
+/* Search and category filter */
+
+.category-search {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.search-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+.search-input-wrap input {
+  width: 100%;
+  min-width: 0;
+}
+
+.category-search select {
+  flex: 0 1 190px;
+  min-width: 150px;
+  padding: 0 14px;
+  color: var(--text);
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font: inherit;
+}
+
+.category-search select:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.category-search select option {
+  background: var(--panel);
+  color: var(--text);
+}
+
+/* Owl-style carousels */
+
+.owl-section {
+  overflow: hidden;
+}
+
+.owl-carousel {
+  width: 100%;
+}
+
+.owl-viewport {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+
+.owl-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.owl-track {
+  display: flex;
+  align-items: stretch;
+  gap: 18px;
+  width: 100%;
+}
+
+.owl-slide {
+  flex: 0 0 calc((100% - 54px) / 4);
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+.owl-slide .movie-card {
+  height: 100%;
+}
+
+.owl-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 22px;
+}
+
+.owl-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.owl-dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 20px;
+  background: rgba(185, 138, 255, .3);
+  cursor: pointer;
+  transition: width .25s ease, background .25s ease;
+}
+
+.owl-dot.active {
+  width: 25px;
+  background: var(--accent);
+}
+
+.owl-arrow {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--text);
+  background: var(--panel2);
+  font-size: 23px;
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease;
+}
+
+.owl-arrow:hover:not(:disabled) {
+  color: #170d24;
+  background: var(--accent);
+}
+
+.owl-arrow:disabled {
+  opacity: .35;
+  cursor: default;
+}
+
+/* Continue Watching: keep the section visible at every screen size */
+
+.continue-section:not([hidden]) {
+  display: block;
+}
+
+.continue-section[hidden] {
+  display: none !important;
+}
+
+/* Footer and detail refinements */
+
+.site-footer .brand-mark {
+  background: linear-gradient(135deg, #c9a5ff, #8854d6);
+}
+
+.detail-description,
+.poster-description {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 900px) {
+  .owl-slide {
+    flex-basis: calc((100% - 36px) / 3);
+  }
+}
+
+@media (max-width: 650px) {
+  .owl-slide {
+    flex-basis: calc((100% - 18px) / 2);
+  }
+
+  .category-search {
+    flex-direction: column;
+  }
+
+  .category-search select,
+  .category-search .button {
+    width: 100%;
+    min-height: 46px;
+  }
+
+  .poster-description {
+    font-size: 11px;
+    left: 10px;
+    right: 10px;
+    bottom: 42px;
+  }
+}
+
+@media (max-width: 420px) {
+  .owl-slide {
+    flex-basis: 82%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .owl-viewport {
+    scroll-behavior: auto;
+  }
+
+  .poster-wrap img,
+  .poster-description,
+  .poster-shade,
+  .play-chip {
+    transition: none;
+  }
+}
 }
