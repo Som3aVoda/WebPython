@@ -597,23 +597,40 @@ def admin_bulk_delete():
     ))
 
     if not movie_ids:
-        flash(
-            'Please select at least one title.',
-            'error'
-        )
+        flash('Please select at least one title.', 'error')
         return redirect(url_for('admin_dashboard'))
 
+    # Get the current movies from the API
+    movies = get_movies()
+
+    if movies is None:
+        flash('Could not retrieve the current movie list. Nothing was deleted.', 'error')
+        return redirect(url_for('admin_dashboard'))
+
+    # Keep only IDs that currently exist
+    existing_ids = {
+        str(movie.get('id'))
+        for movie in movies
+        if movie.get('id') is not None
+    }
+
+    valid_ids = [
+        movie_id for movie_id in movie_ids
+        if movie_id in existing_ids
+    ]
+
+    skipped = len(movie_ids) - len(valid_ids)
     deleted = 0
     failed = 0
 
-    for movie_id in movie_ids:
+    # Delete existing movies
+    for movie_id in valid_ids:
         try:
             api_request(
                 'DELETE',
                 f'/movies/{quote(str(movie_id), safe="")}',
                 admin=True
             )
-
             deleted += 1
 
         except (requests.RequestException, RuntimeError):
@@ -624,19 +641,18 @@ def admin_bulk_delete():
             failed += 1
 
     if deleted:
-        flash(
-            f'Successfully deleted {deleted} title(s).',
-            'success'
-        )
+        flash(f'Successfully deleted {deleted} title(s).', 'success')
+
+    if skipped:
+        flash(f'Skipped {skipped} title(s) that no longer exist.', 'error')
 
     if failed:
-        flash(
-            f'Could not delete {failed} title(s).',
-            'error'
-        )
+        flash(f'Could not delete {failed} title(s).', 'error')
+
+    if not deleted and not skipped and not failed:
+        flash('No titles were deleted.', 'error')
 
     return redirect(url_for('admin_dashboard'))
-
 
 # -------------------------
 # DELETE ONE MOVIE
