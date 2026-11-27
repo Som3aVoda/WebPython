@@ -86,4 +86,31 @@
         min-width: 100px;
         padding: 11px 15px;
     }
+    
+/* Continue Watching — TVhome */
+.continue-section[hidden]{display:none!important}
+.continue-clear{border:1px solid rgba(189,140,255,.35);background:transparent;color:#c9a5ff;border-radius:7px;padding:8px 12px;font-size:10px;cursor:pointer;margin-top:14px}
+.continue-clear:hover{background:rgba(189,140,255,.1)}
+.continue-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:18px}
+.continue-card{min-width:0;overflow:hidden;border:1px solid rgba(189,140,255,.16);border-radius:10px;background:linear-gradient(145deg,#191326,#100d19)}
+.continue-poster{display:block;position:relative;aspect-ratio:16/9;overflow:hidden;background:radial-gradient(circle at 30% 20%,#68448f,#1b1728 70%)}
+.continue-poster img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+.continue-card:hover .continue-poster img{transform:scale(1.04)}
+.continue-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:38px;height:38px;display:grid;place-items:center;border-radius:50%;color:#170d25;background:#bd8cff;box-shadow:0 4px 20px #0008;font-size:13px}
+.poster-no-image{display:grid;place-items:center;color:#e1caff;font-size:42px}
+.continue-info{padding:12px}
+.continue-title{color:#f5efff;font-size:12px;font-weight:700;text-decoration:none}
+.continue-meta{color:#a99bbd;font-size:10px;margin:6px 0 10px}
+.continue-progress{height:4px;overflow:hidden;border-radius:10px;background:#ffffff20}
+.continue-progress span{display:block;height:100%;border-radius:10px;background:#bd8cff}
+.continue-progress.progress-unknown{background:linear-gradient(90deg,#bd8cff55 0 28%,#ffffff18 28% 100%)}
+.continue-actions{display:flex;justify-content:space-between;align-items:center;margin-top:11px}
+.continue-resume{color:#d7bcff;font-size:10px;font-weight:700;text-decoration:none}
+.continue-remove{color:#81778f;border:0;background:none;font-size:10px;cursor:pointer}
+.continue-remove:hover{color:#f3b7d2}
+.watch-progress-note{color:#a99bbd;font-size:10px;line-height:1.6;margin-top:12px}
+#tvhome-video-player{display:block;width:100%;height:auto;min-height:280px;max-height:75vh;background:#000}
+#tvhome-video-player[hidden],#video-player[hidden]{display:none!important}
+@media(max-width:650px){.continue-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.continue-info{padding:9px}.continue-title{font-size:10px}.continue-section .section-heading{align-items:center}.continue-clear{margin-top:0;white-space:nowrap}}
+
 }
