@@ -68,16 +68,33 @@ def movie_matches_query(movie, query):
         movie.get('category', ''),
         movie.get('categories', ''),
         movie.get('type', ''),
-        movie.get('media_type', ''),
+        movie.get('media_type', '')
     ]
 
     searchable_text = ' '.join(
-        ' '.join(str(value) for value in item) if isinstance(item, list)
+        ' '.join(str(value) for value in item)
+        if isinstance(item, list)
         else str(item or '')
         for item in searchable
     ).casefold()
 
     return query.casefold() in searchable_text
+
+
+def is_series(movie):
+    media = ' '.join(
+        str(movie.get(field) or '')
+        for field in ('type', 'media_type')
+    ).casefold()
+
+    return (
+        'series' in media
+        or 'tv show' in media
+        or 'tv series' in media
+        or 'anime' in media
+        or bool(movie.get('season_number'))
+        or bool(movie.get('episode_number'))
+    )
 def related_movies(movie, all_movies):
     movie_id = str(movie.get('id'))
     related_ids = {str(value) for value in movie.get('related_ids', [])}
@@ -110,23 +127,89 @@ def inject_globals():
 
 
 @app.route('/')
+@app.route('/')
 def home():
     movies = get_movies()
+
     if movies is None:
-        return render_template('home.html', movies=[], api_offline=True, featured=[]), 503
-    # Newest entries first while retaining stable ordering for non-numeric IDs.
-    movies = sorted(movies, key=lambda m: int(m.get('id', 0)) if str(m.get('id', '')).isdigit() else 0, reverse=True)
+        return render_template(
+            'home.html',
+            movies=[],
+            featured=[],
+            series=[],
+            api_offline=True
+        ), 503
+
+    # Newest entries first
+    movies = sorted(
+        movies,
+        key=lambda m: int(m.get('id', 0))
+        if str(m.get('id', '')).isdigit() else 0,
+        reverse=True
+    )
+
+    # Trending movies
     featured = movies[:5]
-    return render_template('home.html', movies=movies, featured=featured, api_offline=False)
 
+    # All TV series
+    series = [
+        movie for movie in movies
+        if is_series(movie)
+    ]
 
+    return render_template(
+        'home.html',
+        movies=movies,
+        featured=featured,
+        series=series,
+        api_offline=False
+    )
 @app.route('/search')
 def search():
     query = request.args.get('q', '').strip()
-    movies = get_movies({'q': query}) if query else []
-    return render_template('search.html', movies=movies or [], query=query, api_offline=movies is None)
+    selected_category = request.args.get('category', '').strip()
 
+    all_movies = get_movies()
 
+    if all_movies is None:
+        return render_template(
+            'search.html',
+            movies=[],
+            query=query,
+            categories=[],
+            selected_category=selected_category,
+            api_offline=True
+        )
+
+    categories = sorted(
+        {
+            category
+            for movie in all_movies
+            for category in movie_categories(movie)
+        },
+        key=str.casefold
+    )
+
+    movies = [
+        movie for movie in all_movies
+        if movie_matches_query(movie, query)
+        and (
+            not selected_category
+            or selected_category.casefold() in {
+                category.casefold()
+                for category in movie_categories(movie)
+            }
+        )
+    ]
+
+    return render_template(
+        'search.html',
+        movies=movies,
+        query=query,
+        categories=categories,
+        selected_category=selected_category,
+        api_offline=False
+    )
 @app.route('/movie/<movie_id>')
 def movie_detail(movie_id):
     movies = get_movies()
