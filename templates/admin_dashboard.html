@@ -1,6 +1,187 @@
-{% extends 'base.html' %}{% block title %}Manage library — TVHOME{% endblock %}{% block content %}
-<section class="admin-top"><div><span class="eyebrow">TVHOME CONTROL ROOM</span><h1>Your library,<br><em>your rules.</em></h1><p>Manage titles, update details, and connect stories into collections.</p></div><div class="admin-top-actions"><a class="button button-primary" href="{{ url_for('admin_new_movie') }}">＋ Add a title</a><a class="button button-ghost" href="{{ url_for('admin_logout') }}">Sign out</a></div></section>
-<section class="admin-stats"><div class="admin-stat"><span>LIBRARY SIZE</span><strong>{{ movies|length }}</strong><small>Titles stored in your database</small></div><div class="admin-stat"><span>GROUPED TITLES</span><strong>{{ movies|selectattr('rel')|list|length + movies|selectattr('franchise_id')|list|length }}</strong><small>Titles assigned to a collection</small></div><div class="admin-stat"><span>MANAGEMENT</span><strong>LIVE</strong><small>Changes save to your API database</small></div></section>
-<section class="admin-library"><div class="admin-library-head"><div><span class="eyebrow">CONTENT MANAGER</span><h2>All titles</h2></div><div class="admin-filter"><span>⌕</span><input id="adminFilter" type="search" placeholder="Filter titles..." aria-label="Filter titles"></div></div>
-<div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>TITLE</th><th>TYPE / GENRE</th><th>GROUP</th><th>ID</th><th>ACTIONS</th></tr></thead><tbody id="adminRows">{% for movie in movies %}<tr data-title="{{ movie.title|lower }}"><td><div class="admin-title-cell">{% if movie.img %}<img src="{{ movie.img }}" alt="" loading="lazy">{% else %}<span class="mini-poster">{{ movie.title[:1]|upper }}</span>{% endif %}<strong>{{ movie.title }}</strong></div></td><td>{{ movie.media_type or movie.type or '—' }}</td><td>{% if movie.franchise_id %}<span class="group-tag">{{ movie.franchise_id }}</span>{% elif movie.rel %}<span class="group-tag">{{ movie.rel }}</span>{% elif movie.related_ids %}<span class="group-tag manual-tag">Manual links</span>{% else %}<span class="muted-note">—</span>{% endif %}</td><td class="id-cell">#{{ movie.id }}</td><td><div class="row-actions"><a href="{{ url_for('admin_edit_movie', movie_id=movie.id) }}" class="small-action">Edit</a><form method="post" action="{{ url_for('admin_delete_movie', movie_id=movie.id) }}" onsubmit="return confirm('Delete {{ movie.title|e }}? This cannot be undone.')"><button class="small-action danger-action" type="submit">Delete</button></form></div></td></tr>{% endfor %}</tbody></table>{% if not movies %}<div class="empty-state compact-empty"><h3>No titles yet</h3><p>Add a title to start building your library.</p></div>{% endif %}</div><p class="table-footnote">Tip: use the same franchise ID for automatic grouping, or select individual titles when editing to create manual relationships.</p>
-</section>{% endblock %}
+
+{% extends 'base.html' %}
+{% block title %}Manage library — TVHOME{% endblock %}
+
+{% block content %}
+<section class="admin-top">
+  <div>
+    <span class="eyebrow">TVHOME CONTROL ROOM</span>
+    <h1>Your library,<br><em>your rules.</em></h1>
+    <p>Manage titles, update details, and connect stories into collections.</p>
+  </div>
+  <div class="admin-top-actions">
+    <a class="button button-primary" href="{{ url_for('admin_new_movie') }}">＋ Add a title</a>
+    <a class="button button-ghost" href="{{ url_for('admin_logout') }}">Sign out</a>
+  </div>
+</section>
+
+<section class="admin-stats">
+  <div class="admin-stat">
+    <span>LIBRARY SIZE</span>
+    <strong>{{ movies|length }}</strong>
+    <small>Titles stored in your database</small>
+  </div>
+  <div class="admin-stat">
+    <span>GROUPED TITLES</span>
+    <strong>{{ movies|selectattr('rel')|list|length + movies|selectattr('franchise_id')|list|length }}</strong>
+    <small>Titles assigned to a collection</small>
+  </div>
+  <div class="admin-stat">
+    <span>MANAGEMENT</span>
+    <strong>LIVE</strong>
+    <small>Changes save to your API database</small>
+  </div>
+</section>
+
+<section class="admin-library">
+  <div class="admin-library-head">
+    <div>
+      <span class="eyebrow">CONTENT MANAGER</span>
+      <h2>All titles</h2>
+    </div>
+    <div class="admin-filter">
+      <span>⌕</span>
+      <input id="adminFilter" type="search"
+             placeholder="Filter titles..." aria-label="Filter titles">
+    </div>
+  </div>
+
+  <form id="bulkDeleteForm"
+        method="post"
+        action="{{ url_for('admin_bulk_delete') }}"
+        onsubmit="return document.querySelectorAll('.movie-select:checked').length > 0 && confirm('Delete all selected titles? This cannot be undone.');">
+
+    <div class="bulk-toolbar">
+      <label class="bulk-select-all">
+        <input type="checkbox" id="selectAllMovies">
+        Select all
+      </label>
+
+      <span id="selectedCount">0 selected</span>
+
+      <button type="submit" id="bulkDeleteButton"
+              class="small-action danger-action" disabled>
+        Delete selected
+      </button>
+    </div>
+
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th><span class="sr-only">Select</span></th>
+            <th>TITLE</th>
+            <th>TYPE / GENRE</th>
+            <th>GROUP</th>
+            <th>ID</th>
+            <th>ACTIONS</th>
+          </tr>
+        </thead>
+
+        <tbody id="adminRows">
+          {% for movie in movies %}
+          <tr data-title="{{ movie.title|lower }}">
+            <td>
+              <input type="checkbox"
+                     class="movie-select"
+                     name="movie_ids"
+                     value="{{ movie.id }}"
+                     aria-label="Select {{ movie.title }}">
+            </td>
+
+            <td>
+              <div class="admin-title-cell">
+                {% if movie.img %}
+                  <img src="{{ movie.img }}" alt="" loading="lazy">
+                {% else %}
+                  <span class="mini-poster">{{ movie.title[:1]|upper }}</span>
+                {% endif %}
+                <strong>{{ movie.title }}</strong>
+              </div>
+            </td>
+
+            <td>{{ movie.media_type or movie.type or '—' }}</td>
+
+            <td>
+              {% if movie.franchise_id %}
+                <span class="group-tag">{{ movie.franchise_id }}</span>
+              {% elif movie.rel %}
+                <span class="group-tag">{{ movie.rel }}</span>
+              {% elif movie.related_ids %}
+                <span class="group-tag manual-tag">Manual links</span>
+              {% else %}
+                <span class="muted-note">—</span>
+              {% endif %}
+            </td>
+
+            <td class="id-cell">#{{ movie.id }}</td>
+
+            <td>
+              <div class="row-actions">
+                <a href="{{ url_for('admin_edit_movie', movie_id=movie.id) }}"
+                   class="small-action">Edit</a>
+
+                <form method="post"
+                      action="{{ url_for('admin_delete_movie', movie_id=movie.id) }}"
+                      onsubmit="return confirm('Delete this title? This cannot be undone.')">
+                  <button class="small-action danger-action" type="submit">
+                    Delete
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {% if not movies %}
+      <div class="empty-state compact-empty">
+        <h3>No titles yet</h3>
+        <p>Add a title to start building your library.</p>
+      </div>
+      {% endif %}
+    </div>
+  </form>
+
+  <p class="table-footnote">
+    Tip: use the same franchise ID for automatic grouping, or select
+    individual titles when editing to create manual relationships.
+  </p>
+</section>
+
+<script>
+(() => {
+  const selectAll = document.getElementById('selectAllMovies');
+  const checkboxes = [...document.querySelectorAll('.movie-select')];
+  const count = document.getElementById('selectedCount');
+  const deleteButton = document.getElementById('bulkDeleteButton');
+
+  function updateSelection() {
+    const selected = checkboxes.filter(box => box.checked).length;
+
+    count.textContent = `${selected} selected`;
+    deleteButton.disabled = selected === 0;
+
+    selectAll.checked = checkboxes.length > 0 &&
+      selected === checkboxes.length;
+
+    selectAll.indeterminate = selected > 0 &&
+      selected < checkboxes.length;
+  }
+
+  selectAll.addEventListener('change', () => {
+    checkboxes.forEach(box => {
+      box.checked = selectAll.checked;
+    });
+    updateSelection();
+  });
+
+  checkboxes.forEach(box => {
+    box.addEventListener('change', updateSelection);
+  });
+
+  updateSelection();
+})();
+</script>
+{% endblock %}
