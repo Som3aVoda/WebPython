@@ -35,8 +35,49 @@ def get_movies(params=None):
 
 def group_key(movie):
     return str(movie.get('franchise_id') or movie.get('rel') or '').strip()
+    
+def movie_categories(movie):
+    """Collect category labels from existing movie fields."""
+    values = []
+
+    for field in ('genre', 'genres', 'category', 'categories', 'type', 'media_type'):
+        value = movie.get(field)
+
+        if isinstance(value, list):
+            values.extend(value)
+        elif isinstance(value, str):
+            values.extend(value.replace('|', ',').replace('/', ',').split(','))
+
+    return sorted({
+        str(value).strip()
+        for value in values
+        if value and str(value).strip()
+    }, key=str.casefold)
 
 
+def movie_matches_query(movie, query):
+    if not query:
+        return True
+
+    searchable = [
+        movie.get('title', ''),
+        movie.get('desc', ''),
+        movie.get('cast', ''),
+        movie.get('genre', ''),
+        movie.get('genres', ''),
+        movie.get('category', ''),
+        movie.get('categories', ''),
+        movie.get('type', ''),
+        movie.get('media_type', ''),
+    ]
+
+    searchable_text = ' '.join(
+        ' '.join(str(value) for value in item) if isinstance(item, list)
+        else str(item or '')
+        for item in searchable
+    ).casefold()
+
+    return query.casefold() in searchable_text
 def related_movies(movie, all_movies):
     movie_id = str(movie.get('id'))
     related_ids = {str(value) for value in movie.get('related_ids', [])}
