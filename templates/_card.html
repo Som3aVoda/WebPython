@@ -6,7 +6,7 @@
     {% if movie.media_type or movie.type %}<span class="poster-tag">{{ movie.media_type or movie.type }}</span>{% endif %}
   </a>
   <div class="card-info"><a href="{{ url_for('movie_detail', movie_id=movie.id) }}" class="card-title">{{ movie.title }}</a>
-    <div class="card-meta"><span>{{ movie.release_year or 'FilmHub pick' }}</span>{% if movie.season_number %}<span>Season {{ movie.season_number }}{% if movie.episode_number %} · Ep {{ movie.episode_number }}{% endif %}</span>{% endif %}</div>
+    <div class="card-meta"><span>{{ movie.release_year or 'TVHOME pick' }}</span>{% if movie.season_number %}<span>Season {{ movie.season_number }}{% if movie.episode_number %} · Ep {{ movie.episode_number }}{% endif %}</span>{% endif %}</div>
     {% set group = movie.franchise_id or movie.rel %}{% if group or movie.related_ids %}<a class="collection-link" href="{{ url_for('collection', collection_id=movie.id) }}">View collection <span>↗</span></a>{% endif %}
   </div>
 </article>
