@@ -16,8 +16,8 @@
 {% if not servers and movie.url %}{% set servers = [{'name': 'Main Server', 'url': movie.url}] %}{% endif %}
 <section class="watch-section" id="watch-section"
  data-watch-id="{{ movie.id }}" data-watch-title="{{ movie.title }}"
- data-watch-poster="{{ movie.img or '' }}" data-watch-page="{{ request.full_path }}"
- data-watch-media="{{ movie.media_type or movie.type or '' }}"
+data-watch-poster="{{ movie.img or '' }}" data-watch-page="{{ request.path }}"
+  data-watch-media="{{ movie.media_type or movie.type or '' }}"
  data-watch-season="{{ movie.season_number or '' }}" data-watch-episode="{{ movie.episode_number or '' }}">
   <h2>Watch {{ movie.title }}</h2>
   {% if servers %}
